@@ -1,0 +1,26 @@
+2024-03-21 17:01:41 base.py[line:181] INFO Scheduler started
+2024-03-21 17:01:41 _internal.py[line:96] INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:2024
+2024-03-21 17:01:41 _internal.py[line:96] INFO [33mPress CTRL+C to quit[0m
+2024-03-21 17:01:41 _internal.py[line:96] INFO  * Restarting with stat
+2024-03-21 17:01:42 base.py[line:181] INFO Scheduler started
+2024-03-21 17:01:42 _internal.py[line:96] WARNING  * Debugger is active!
+2024-03-21 17:01:42 _internal.py[line:96] INFO  * Debugger PIN: 126-178-183
+2024-03-21 17:01:57 base.py[line:181] INFO Scheduler started
+2024-03-21 17:01:57 _internal.py[line:96] INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:2024
+2024-03-21 17:01:57 _internal.py[line:96] INFO [33mPress CTRL+C to quit[0m
+2024-03-21 17:01:57 _internal.py[line:96] INFO  * Restarting with stat
+2024-03-21 17:01:58 base.py[line:181] INFO Scheduler started
+2024-03-21 17:01:58 _internal.py[line:96] WARNING  * Debugger is active!
+2024-03-21 17:01:58 _internal.py[line:96] INFO  * Debugger PIN: 126-178-183
+2024-03-21 17:02:20 _internal.py[line:96] INFO  * Detected change in '/Users/lnine9/Desktop/projects/spider/flaskProject/service/scheduler.py', reloading
+2024-03-21 17:02:20 _internal.py[line:96] INFO  * Restarting with stat
+2024-03-21 17:02:21 base.py[line:181] INFO Scheduler started
+2024-03-21 17:02:21 _internal.py[line:96] WARNING  * Debugger is active!
+2024-03-21 17:02:21 _internal.py[line:96] INFO  * Debugger PIN: 126-178-183
+2024-03-21 17:02:22 _internal.py[line:96] INFO 127.0.0.1 - - [21/Mar/2024 17:02:22] "OPTIONS /api/schedule/changeStatus HTTP/1.1" 200 -
+2024-03-21 17:02:22 _internal.py[line:96] INFO 127.0.0.1 - - [21/Mar/2024 17:02:22] "POST /api/schedule/changeStatus HTTP/1.1" 200 -
+2024-03-21 17:02:22 _internal.py[line:96] INFO 127.0.0.1 - - [21/Mar/2024 17:02:22] "GET /api/schedule/list HTTP/1.1" 200 -
+2024-03-21 17:04:38 _internal.py[line:96] INFO  * Detected change in '/Users/lnine9/Desktop/projects/spider/flaskProject/service/scheduler.py', reloading
+2024-03-21 17:04:39 _internal.py[line:96] INFO  * Restarting with stat
