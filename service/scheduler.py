@@ -3,7 +3,6 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from setting import MYSQL
 import logging
-from logging.handlers import RotatingFileHandler
 
 url = f'mysql+pymysql://{MYSQL["USER"]}:{MYSQL["PASSWORD"]}@{MYSQL["HOST"]}:{MYSQL["PORT"]}/{MYSQL["DB"]}'
 

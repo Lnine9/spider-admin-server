@@ -10,7 +10,12 @@ class SubjectService:
     @classmethod
     def list_subject(cls):
         query = Subject.select()
-        return list(query)
+
+        result = {
+            'list': query.dicts(),
+            'total': query.count()
+        }
+        return result
 
     @classmethod
     def get_subject_by_id(cls, id):
@@ -32,3 +37,4 @@ class SubjectService:
     def delete_subject(cls, id):
         local = Subject.get(Subject.id == id)
         local.delete_instance()
+
