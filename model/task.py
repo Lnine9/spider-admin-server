@@ -14,10 +14,12 @@ class Task(BaseModel):
     spider_id = CharField(null=True)
     start_time = DateTimeField(null=True)
     status = IntegerField()
-    subject = ForeignKeyField(column_name='subject_id', field='id', model=Subject, null=True)
+    subject_id = CharField(null=True)
     total_crawl = IntegerField(null=True)
     total_resolve = IntegerField(null=True)
     update_time = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")], null=True)
+    range_start_time = DateTimeField(null=True)
+    range_end_time = DateTimeField(null=True)
 
     class Meta:
         table_name = 'task'

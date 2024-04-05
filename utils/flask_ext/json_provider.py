@@ -16,7 +16,7 @@ def default_json_encoder(o):
         return model_to_dict(o)
 
     if isinstance(o, datetime):
-        return o.strftime(DATETIME_FORMAT)
+        return o.timestamp()
 
     return o
 

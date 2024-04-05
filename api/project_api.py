@@ -1,12 +1,15 @@
 from utils.flask_ext.flask_app import BlueprintAppApi
 from service.project_service import ProjectService
 from flask import request
+from utils.index import clean_params
 
 project_api = BlueprintAppApi(name="project", import_name=__name__)
 
-@project_api.get('/list')
-def list_project():
-    return ProjectService.list_project()
+
+@project_api.get('/query')
+def query_project():
+    params = clean_params(request.args.to_dict())
+    return ProjectService.query_project(params)
 
 
 @project_api.get('/get')
@@ -58,4 +61,3 @@ def update_project():
 def delete_project():
     id = request.json.get('id')
     return ProjectService.delete_project(id)
-

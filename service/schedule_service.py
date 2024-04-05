@@ -3,7 +3,6 @@ from model.subject import Subject
 from utils.id import generate_uuid
 from service.project_service import ProjectService
 from service.scheduler import scheduler
-from utils.time_util import get_datetime_str
 import datetime
 from constants.index import ProjectStatus, TaskStatus, ScheduleStatus
 from utils.index import resolve_cron
@@ -24,13 +23,13 @@ def job(schedule_id):
         last_run_time = schedule.last_run_time
 
     project = {
-        'name': f"{schedule.name}{get_datetime_str()}",
+        'name': f"{schedule.name}-{str(int(now.timestamp()))}",
         'schedule_id': schedule.id,
         'slice_size': schedule.slice_size,
         'spider_id': schedule.spider_id,
         'subject_id': schedule.subject_id,
-        'start_time': last_run_time,
-        'end_time': now,
+        'range_start_time': last_run_time,
+        'range_end_time': now,
         'status': ProjectStatus.UN_COMPLETED
     }
     schedule.last_run_time = now
@@ -119,5 +118,6 @@ class ScheduleService:
 
 
 if __name__ == '__main__':
-    q = Schedule.select(Schedule, Subject.name.alias('subject_name')).join(Subject, on=(Schedule.subject_id == Subject.id))
+    q = Schedule.select(Schedule, Subject.name.alias('subject_name')).join(Subject,
+                                                                           on=(Schedule.subject_id == Subject.id))
     print(list(q.dicts()))
