@@ -20,7 +20,6 @@ def generate_jwt_token(data):
 def decode_jwt_token(token):
     secret_key = os.environ.get('JWT_SECRET_KEY')  # 从环境变量中获取密钥
     algorithm = 'HS256'
-
     try:
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         return payload.get('data')
