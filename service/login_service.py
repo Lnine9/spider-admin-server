@@ -1,6 +1,8 @@
 import hashlib
 from datetime import datetime
 
+from flask import Response
+
 from model.user import User
 from utils.JWT_token import generate_jwt_token
 from utils.id import generate_uuid
@@ -15,7 +17,7 @@ class LoginService:
         if user_name and password:
             query = User.select(User).where(User.user_name == user_name).first()
             if query is None:
-                return {"error""登录失败"}
+                return Response("登录失败",500)
             if hashlib.sha256(password.encode()).hexdigest() == query.password:
                 user = {
                     "id": query.id,
@@ -24,7 +26,7 @@ class LoginService:
                 }
                 token = generate_jwt_token(user)
                 return {"token": token}
-        return {"error""登录失败"}
+        return Response("登录失败",500)
 
     @classmethod
     def sign(self, user_name, password):

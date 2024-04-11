@@ -1,5 +1,4 @@
-from flask import request
-
+from flask import request, redirect
 from service.login_service import LoginService
 from utils.flask_ext.flask_app import BlueprintAppApi
 
@@ -24,4 +23,4 @@ def sign():
 
 @login_api.get('/logout')
 def logout():
-    return
+    return redirect('/index', code=302, Response=None)
