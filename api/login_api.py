@@ -23,4 +23,4 @@ def sign():
 
 @login_api.get('/logout')
 def logout():
-    return redirect('/index', code=302, Response=None)
+    return redirect('/api/sign/login', code=302, Response=None)
