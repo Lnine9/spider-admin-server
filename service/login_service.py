@@ -17,7 +17,7 @@ class LoginService:
         if user_name and password:
             query = User.select(User).where(User.user_name == user_name).first()
             if query is None:
-                return Response("登录失败",500)
+                return Response("登录失败", 500)
             if hashlib.sha256(password.encode()).hexdigest() == query.password:
                 user = {
                     "id": query.id,
@@ -26,7 +26,7 @@ class LoginService:
                 }
                 token = generate_jwt_token(user)
                 return {"token": token}
-        return Response("登录失败",500)
+        return Response("登录失败", 500)
 
     @classmethod
     def sign(self, user_name, password):
