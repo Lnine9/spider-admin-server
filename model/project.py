@@ -1,6 +1,4 @@
-from peewee import DateTimeField, CharField, BigIntegerField, IntegerField, SQL, ForeignKeyField
-from model.subject import Subject
-
+from peewee import DateTimeField, CharField, IntegerField, SQL
 from model.base import BaseModel
 
 

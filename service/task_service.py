@@ -10,12 +10,12 @@ class TaskService:
 
     @classmethod
     def list_task(cls):
-        query = Task.select(Task, Subject.name.alias('subject_name')).join(Subject).dicts()
+        query = Task.select(Task, Subject.name.alias('subject_name')).left_outer_join(Subject).dicts()
         return list(query)
 
     @classmethod
     def get_task_by_id(cls, id):
-        find = Task.select(Task, Subject.name.alias('subject_name')).join(Subject).where(Task.id == id).dicts().get()
+        find = Task.select(Task, Subject.name.alias('subject_name')).left_outer_join(Subject).where(Task.id == id).dicts().get()
         return find
 
     @classmethod
@@ -38,8 +38,8 @@ class TaskService:
     def get_task_by_project_id(cls, project_id):
         query = (Task
                  .select(Task, Subject.name.alias('subject_name'), Project.name.alias('project_name'))
-                 .join(Subject, on=(Task.subject_id == Subject.id))
-                 .join(Project, on=(Task.project_id == Project.id))
+                 .left_outer_join(Subject, on=(Task.subject_id == Subject.id))
+                 .left_outer_join(Project, on=(Task.project_id == Project.id))
                  .where(Task.project_id == project_id))
 
         result = {

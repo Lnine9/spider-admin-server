@@ -46,7 +46,7 @@ class ScheduleService:
         query = (
             Schedule
             .select(Schedule, Subject.name.alias('subject_name'))
-            .join(Subject, on=(Schedule.subject_id == Subject.id))
+            .left_outer_join(Subject, on=(Schedule.subject_id == Subject.id))
             .order_by(Schedule.create_time.desc())
             .paginate(int(params.get('page_num')), int(params.get('page_size')))
         )
@@ -61,7 +61,7 @@ class ScheduleService:
     @classmethod
     def get_schedule_by_id(cls, id):
         find = (Schedule.select(Schedule, Subject.name.alias('subject_name'), Subject.id.alias('subject_id'))
-                .join(Subject).where(Schedule.id == id).dicts().get())
+                .left_outer_join(Subject).where(Schedule.id == id).dicts().get())
         return find
 
     @classmethod
@@ -118,6 +118,6 @@ class ScheduleService:
 
 
 if __name__ == '__main__':
-    q = Schedule.select(Schedule, Subject.name.alias('subject_name')).join(Subject,
+    q = Schedule.select(Schedule, Subject.name.alias('subject_name')).left_outer_join(Subject,
                                                                            on=(Schedule.subject_id == Subject.id))
     print(list(q.dicts()))
