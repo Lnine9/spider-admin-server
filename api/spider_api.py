@@ -38,14 +38,14 @@ def delete_spider_info():
     return SpiderService.delete_spider_info(id)
 
 """
-爬虫文件上
+爬虫文件上传
 :return:
 """
 
 
 @spider_api.post("/upload")
 def upload_file():
-    file = request.files['the_file']
-    path = f"/spiders/{secure_filename(file.filename)}"
+    file = request.files['MultiDict']
+    path = f"{secure_filename(file.filename)}"
     file.save(path)
     return SpiderService.upload_file(request, path)
