@@ -72,3 +72,7 @@ class SpiderService:
         resolver.class_path = path
         resolver.save()
         return resolver.id
+
+    @classmethod
+    def get_file_info(self,request):
+        resolver = Resolver().select().where()

@@ -58,3 +58,7 @@ def upload_file():
     os.makedirs(os.path.dirname(path), exist_ok=True)
     file.save(path)
     return SpiderService.upload_file(request, path)
+
+@spider_api.get("/getFileInfo")
+def get_file_info():
+    return SpiderService.get_file_info(request)
