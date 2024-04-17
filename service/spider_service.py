@@ -38,7 +38,10 @@ class SpiderService:
         spider_info.base_path = form.get('base_path')
         spider_info.resolvers = json.dumps(form.get('resolvers'))
         spider_info.save()
-        return spider_info.id
+        result = {
+            'spider_id': spider_info.id
+        }
+        return result
 
     @classmethod
     def update_spider_info(self, form):
@@ -71,8 +74,12 @@ class SpiderService:
         resolver.discription = request.form.get('discription')
         resolver.class_path = path
         resolver.save()
-        return resolver.id
+        result = {
+            'resolver_id': resolver.id
+        }
+        return result
 
     @classmethod
     def get_file_info(self,request):
-        resolver = Resolver().select().where()
+        resolver = Resolver().select().where(Resolver.type == request.form.get('type')
+          if request.form.get('type') else Resolver.type == None)
