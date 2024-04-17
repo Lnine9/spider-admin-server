@@ -19,8 +19,8 @@ class ProjectService:
     def query_project(cls, params):
         query = (Project
                  .select(Project, Subject.name.alias('subject_name'), Schedule.name.alias('schedule_name'))
-                 .join(Subject, on=(Project.subject_id == Subject.id))
-                 .join(Schedule, on=(Project.schedule_id == Schedule.id))
+                 .left_outer_join(Subject, on=(Project.subject_id == Subject.id))
+                 .left_outer_join(Schedule, on=(Project.schedule_id == Schedule.id))
                  .order_by(Project.create_time.desc())
                  .paginate(int(params.get('page_num')), int(params.get('page_size'))))
         if 'subject_id' in params:
@@ -44,8 +44,8 @@ class ProjectService:
     def get_project_by_id(cls, id):
         find = (Project
                  .select(Project, Subject.name.alias('subject_name'), Schedule.name.alias('schedule_name'))
-                 .join(Subject, on=(Project.subject_id == Subject.id))
-                 .join(Schedule, on=(Project.schedule_id == Schedule.id))
+                 .left_outer_join(Subject, on=(Project.subject_id == Subject.id))
+                 .left_outer_join(Schedule, on=(Project.schedule_id == Schedule.id))
                  .where(Project.id == id)
                  .dicts().get())
         return find
@@ -53,9 +53,8 @@ class ProjectService:
     @classmethod
     def add_project(cls, project):
         project['id'] = generate_uuid()
-        Project.create(**project)
-
         cls.split_project(project)
+        Project.create(**project)
 
     @classmethod
     def update_project(cls, id, new_project):
