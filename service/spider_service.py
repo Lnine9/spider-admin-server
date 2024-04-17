@@ -26,34 +26,34 @@ class SpiderService:
     def add_spider_info(self, form):
         spider_info = SpiderInfo()
         spider_info.id = generate_uuid()
-        spider_info.name = form['name']
-        spider_info.an_type = form['an_type']
+        spider_info.name = form.get('name')
+        spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
-        spider_info.discription = form['discription']
-        spider_info.section_page_size = form['section_page_size']
-        spider_info.callback = form['callback']
-        spider_info.method = form['method']
-        spider_info.body = form['body']
-        spider_info.url = form['url']
-        spider_info.base_path = form['base_path']
-        spider_info.resolvers = json.dumps(form['resolvers'])
+        spider_info.discription = form.get('discription')
+        spider_info.section_page_size = form.get('section_page_size')
+        spider_info.callback =form.get('callback')
+        spider_info.method = form.get('method')
+        spider_info.body = form.get('body')
+        spider_info.url = form.get('url')
+        spider_info.base_path = form.get('base_path')
+        spider_info.resolvers = json.dumps(form.get('resolvers'))
         spider_info.save()
         return spider_info.id
 
     @classmethod
     def update_spider_info(self, form):
         spider_info = SpiderInfo.select().where(SpiderInfo.id == form['id']).first()
-        spider_info.name = form['name']
-        spider_info.an_type = form['an_type']
+        spider_info.name = form.get('name')
+        spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
-        spider_info.discription = form['discription']
-        spider_info.section_page_size = form['section_page_size']
-        spider_info.callback = form['callback']
-        spider_info.method = form['method']
-        spider_info.body = form['body']
-        spider_info.url = form['url']
-        spider_info.base_path = form['base_path']
-        spider_info.resolvers = json.dumps(form['resolvers'])
+        spider_info.discription = form.get('discription')
+        spider_info.section_page_size = form.get('section_page_size')
+        spider_info.callback =form.get('callback')
+        spider_info.method = form.get('method')
+        spider_info.body = form.get('body')
+        spider_info.url = form.get('url')
+        spider_info.base_path = form.get('base_path')
+        spider_info.resolvers = json.dumps(form.get('resolvers'))
         spider_info.save()
 
     @classmethod
@@ -65,9 +65,10 @@ class SpiderService:
     def upload_file(self, request, path):
         resolver = Resolver()
         resolver.id = generate_uuid()
-        resolver.name = request.form['name']
-        resolver.type = request.form['type']
-        resolver.class_name = request.form['class_name']
-        resolver.discription = request.form['discription']
+        resolver.name = request.form.get('name')
+        resolver.type = request.form.get('type')
+        resolver.class_name = request.form.get('class_name')
+        resolver.discription = request.form.get('discription')
         resolver.class_path = path
         resolver.save()
+        return resolver.id
