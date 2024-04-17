@@ -1,7 +1,10 @@
+import os
+
 from flask import request
 from werkzeug.utils import secure_filename
 
 from service.spider_service import SpiderService
+from utils.JWT_token import decode_jwt_token
 from utils.flask_ext.flask_app import BlueprintAppApi
 
 spider_api = BlueprintAppApi(name="spider", import_name=__name__)
@@ -49,6 +52,9 @@ def delete_spider_info():
 @spider_api.post("/upload")
 def upload_file():
     file = request.files['MultiDict']
-    path = "/spiders/" + f"{secure_filename(file.filename)}"
+    user_name = decode_jwt_token(request.headers.get('Authorization'))['user_name']
+    pre_path = "/spiders/"+user_name
+    path = pre_path + f"{secure_filename(file.filename)}"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     file.save(path)
     return SpiderService.upload_file(request, path)
