@@ -29,7 +29,7 @@ def before_request():
             logging.error(e)
 
     '''设置页面登录拦截，判断token是否存在或过期'''
-    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider')) is False:
+    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
         token = request.headers.get('Authorization')
         if token is None:
             return Response('用户未登录', 401)
@@ -41,7 +41,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     '''刷新token'''
-    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider')) is False:
+    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
         token = request.headers.get('Authorization')
         if token is not None:
             auth = decode_jwt_token(token)
