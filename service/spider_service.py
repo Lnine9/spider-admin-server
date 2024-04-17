@@ -31,7 +31,7 @@ class SpiderService:
         spider_info.enable = 0
         spider_info.discription = form.get('discription')
         spider_info.section_page_size = form.get('section_page_size')
-        spider_info.callback =form.get('callback')
+        spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
         spider_info.body = form.get('body')
         spider_info.url = form.get('url')
@@ -39,7 +39,8 @@ class SpiderService:
         spider_info.resolvers = json.dumps(form.get('resolvers'))
         spider_info.save()
         result = {
-            'spider_id': spider_info.id
+            'spider_id': spider_info.id,
+            'spider_name': spider_info.id
         }
         return result
 
@@ -51,7 +52,7 @@ class SpiderService:
         spider_info.enable = 0
         spider_info.discription = form.get('discription')
         spider_info.section_page_size = form.get('section_page_size')
-        spider_info.callback =form.get('callback')
+        spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
         spider_info.body = form.get('body')
         spider_info.url = form.get('url')
@@ -75,11 +76,19 @@ class SpiderService:
         resolver.class_path = path
         resolver.save()
         result = {
-            'resolver_id': resolver.id
+            'resolver_id': resolver.id,
+            'resolver_name': resolver.name
         }
         return result
 
     @classmethod
     def get_file_info(self):
         resolver = Resolver().select()
-        return{"resolvers":resolver}
+        return {"resolvers": resolver}
+
+    @classmethod
+    def get_detail_info(self, id):
+        spider_info = SpiderInfo().select().where(SpiderInfo.id == id).get()
+        resolverids = json.loads(spider_info.resolvers)
+        resolver = Resolver().select().where(Resolver.id.in_(resolverids))
+        return {"spider_info": spider_info, "resolvers": resolver}
