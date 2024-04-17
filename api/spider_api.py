@@ -28,14 +28,17 @@ def get_basic_info():
 def add_spider_info():
     return SpiderService.add_spider_info(request.form)
 
+
 @spider_api.post("/update")
 def update_spider_info():
     return SpiderService.update_spider_info(request.form)
+
 
 @spider_api.post("/delete")
 def delete_spider_info():
     id = request.form.get("id")
     return SpiderService.delete_spider_info(id)
+
 
 """
 爬虫文件上传
@@ -46,6 +49,6 @@ def delete_spider_info():
 @spider_api.post("/upload")
 def upload_file():
     file = request.files['MultiDict']
-    path = f"{secure_filename(file.filename)}"
+    path = "/spiders/" + f"{secure_filename(file.filename)}"
     file.save(path)
     return SpiderService.upload_file(request, path)
