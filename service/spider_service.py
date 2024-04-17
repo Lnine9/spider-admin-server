@@ -80,6 +80,6 @@ class SpiderService:
         return result
 
     @classmethod
-    def get_file_info(self,request):
-        resolver = Resolver().select().where(Resolver.type == request.form.get('type')
-          if request.form.get('type') else Resolver.type == None)
+    def get_file_info(self):
+        resolver = Resolver().select()
+        return{"resolvers":resolver}

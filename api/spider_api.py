@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import request
 from werkzeug.utils import secure_filename
@@ -53,12 +54,12 @@ def delete_spider_info():
 def upload_file():
     file = request.files['MultiDict']
     user_name = decode_jwt_token(request.headers.get('Authorization'))['user_name']
-    pre_path = "/spiders/"+user_name
+    pre_path = "/spiders/"+user_name+"/"
     path = pre_path + f"{secure_filename(file.filename)}"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    os.makedirs(os.path.dirname(pre_path), exist_ok=True)
     file.save(path)
     return SpiderService.upload_file(request, path)
 
 @spider_api.get("/getFileInfo")
 def get_file_info():
-    return SpiderService.get_file_info(request)
+    return SpiderService.get_file_info()
