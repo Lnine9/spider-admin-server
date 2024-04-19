@@ -21,10 +21,9 @@ def get_basic_info():
     spider_id = request.args.get("spider_id")
     return SpiderService.get_basic_info(spider_id)
 
-@spider_api.get("/getDetailInfo")
-def get_detail_info():
-    id = request.args.get('id')
-    return SpiderService.get_detail_info(id)
+@spider_api.get("/getSpiderList")
+def get_spider_list():
+    return SpiderService.get_spider_list()
 
 """
 新增爬虫基本信息

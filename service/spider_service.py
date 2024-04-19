@@ -87,8 +87,6 @@ class SpiderService:
         return {"resolvers": resolver}
 
     @classmethod
-    def get_detail_info(self, id):
-        spider_info = SpiderInfo().select().where(SpiderInfo.id == id).get()
-        resolverids = json.loads(spider_info.resolvers)
-        resolver = Resolver().select().where(Resolver.id.in_(resolverids))
-        return {"spider_info": spider_info, "resolvers": resolver}
+    def get_spider_list(self):
+        spider_info = SpiderInfo().select()
+        return {"spider_info": spider_info}
