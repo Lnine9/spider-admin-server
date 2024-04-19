@@ -4,6 +4,7 @@ import os
 from flask import request, make_response, Response
 from flask_cors import CORS
 from router import register_blueprint
+from setting import SECRET_KEY
 from utils.JWT_token import decode_jwt_token, generate_jwt_token
 from utils.flask_ext.flask_app import FlaskApp
 from service.scrapyd_service import ScrapydService
@@ -23,12 +24,7 @@ def before_request():
 
     '''将jwt生成的私钥放入环境变量中'''
     if os.getenv('JWT_SECRET_KEY') is None:
-        try:
-            with open('./secretkey.txt', 'r') as file:
-                secret_key = file.read()
-                os.environ['JWT_SECRET_KEY'] = secret_key
-        except FileNotFoundError as e:
-            logging.error(e)
+        os.environ['JWT_SECRET_KEY'] = SECRET_KEY
 
     '''设置页面登录拦截，判断token是否存在或过期'''
     if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
