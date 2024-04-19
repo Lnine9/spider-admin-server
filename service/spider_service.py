@@ -87,5 +87,5 @@ class SpiderService:
     @classmethod
     def get_spider_list(self, page_no=1, page_size=10):
         spider_info = SpiderInfo().select().paginate(page_no, page_size)
-        total = SpiderInfo().select().scalar()
+        total = SpiderInfo.select().count()
         return {"spider_info": spider_info, "total": total}
