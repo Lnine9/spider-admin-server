@@ -21,9 +21,13 @@ def get_basic_info():
     spider_id = request.args.get("spider_id")
     return SpiderService.get_basic_info(spider_id)
 
+
 @spider_api.get("/getSpiderList")
 def get_spider_list():
+    page_no = request.args.get("page_no")
+    page_size = request.args.get("page_size")
     return SpiderService.get_spider_list()
+
 
 """
 新增爬虫基本信息
@@ -34,8 +38,6 @@ def get_spider_list():
 @spider_api.post("/add")
 def add_spider_info():
     return SpiderService.add_spider_info(request.form)
-
-
 
 
 @spider_api.post("/update")
@@ -59,11 +61,12 @@ def delete_spider_info():
 def upload_file():
     file = request.files['MultiDict']
     user_name = decode_jwt_token(request.headers.get('Authorization'))['user_name']
-    pre_path = "/spiders/"+user_name+"/"
+    pre_path = "/spiders/" + user_name + "/"
     path = pre_path + f"{secure_filename(file.filename)}"
     os.makedirs(os.path.dirname(pre_path), exist_ok=True)
     file.save(path)
     return SpiderService.upload_file(request, path)
+
 
 @spider_api.get("/getFileInfo")
 def get_file_info():
