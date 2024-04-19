@@ -18,6 +18,7 @@ class Project(BaseModel):
     update_time = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")], null=True)
     range_start_time = DateTimeField(null=True)
     range_end_time = DateTimeField(null=True)
+    mode = IntegerField()
 
     class Meta:
         table_name = 'project'

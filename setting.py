@@ -3,7 +3,7 @@ MYSQL = {
     'HOST': 'localhost',
     'PORT': 3306,
     'USER': 'root',
-    'PASSWORD': '799831310',
+    'PASSWORD': 'l20020204',
 }
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'

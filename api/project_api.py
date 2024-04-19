@@ -2,7 +2,7 @@ from utils.flask_ext.flask_app import BlueprintAppApi
 from service.project_service import ProjectService
 from flask import request
 from utils.index import clean_params
-from constants.index import ProjectStatus
+from constants.index import ProjectStatus, TaskMode
 import datetime
 
 project_api = BlueprintAppApi(name="project", import_name=__name__)
@@ -35,7 +35,8 @@ def add_project():
         'slice_size': slice_size,
         'status': ProjectStatus.UN_COMPLETED,
         'range_start_time': range_start_time,
-        'range_end_time': range_end_time
+        'range_end_time': range_end_time,
+        'mode': TaskMode.RANGE,
     }
     return ProjectService.add_project(project)
 

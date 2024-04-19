@@ -2,6 +2,8 @@ from model.task import Task
 from model.subject import Subject
 from model.project import Project
 from utils.id import generate_uuid
+from constants.index import TaskStatus
+import datetime
 
 
 class TaskService:
@@ -15,7 +17,8 @@ class TaskService:
 
     @classmethod
     def get_task_by_id(cls, id):
-        find = Task.select(Task, Subject.name.alias('subject_name')).left_outer_join(Subject).where(Task.id == id).dicts().get()
+        find = Task.select(Task, Subject.name.alias('subject_name')).left_outer_join(Subject).where(
+            Task.id == id).dicts().get()
         return find
 
     @classmethod
@@ -48,4 +51,30 @@ class TaskService:
         }
         return result
 
+    @classmethod
+    def update_task_status(cls, id, data):
+        task = Task.get(Task.id == id)
+        project = Project.get(Project.id == task.project_id)
+        tasks = Task.select().where(Task.project_id == project.id)
 
+        task.status = data.get('status')
+        if (task.status == TaskStatus.RUNNING) and (task.start_time is None):
+            task.start_time = datetime.datetime.now()
+
+        if (task.status == TaskStatus.COMPLETED) and (task.end_time is None):
+            task.end_time = datetime.datetime.now()
+            if data.get('total_crawl') is not None:
+                task.total_crawl = data.total_crawl
+                project.total_crawl += data.total_crawl
+            if data.get('total_resolve') is not None:
+                task.total_resolve = data.total_resolve
+                project.total_resolve += data.total_resolve
+            if data.get('log_url') is not None:
+                task.log_url = data.get('log_url')
+
+        if all([t.status == TaskStatus.COMPLETED for t in tasks]):
+            project.status = TaskStatus.COMPLETED
+            project.end_time = datetime.datetime.now()
+
+        task.save()
+        project.save()
