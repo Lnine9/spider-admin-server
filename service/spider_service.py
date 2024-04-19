@@ -28,7 +28,7 @@ class SpiderService:
         spider_info.name = form.get('name')
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
-        spider_info.discription = form.get('discription')
+        spider_info.description = form.get('description')
         spider_info.section_page_size = form.get('section_page_size')
         spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
@@ -49,7 +49,7 @@ class SpiderService:
         spider_info.name = form.get('name')
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
-        spider_info.discription = form.get('discription')
+        spider_info.description = form.get('description')
         spider_info.section_page_size = form.get('section_page_size')
         spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
