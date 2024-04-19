@@ -6,14 +6,16 @@ from flask_cors import CORS
 from router import register_blueprint
 from utils.JWT_token import decode_jwt_token, generate_jwt_token
 from utils.flask_ext.flask_app import FlaskApp
+from service.scrapyd_service import ScrapydService
 
 app = FlaskApp(__name__)
 CORS(app)
 
 register_blueprint(app)
 
+ScrapydService.init()
 
-@app.before_request
+# @app.before_request
 def before_request():
     """跨域请求会出现options，直接返回即可"""
     if request.method == 'OPTIONS':
@@ -38,7 +40,7 @@ def before_request():
             return Response('token已过期', 401)
 
 
-@app.after_request
+# @app.after_request
 def after_request(response):
     '''刷新token'''
     if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:

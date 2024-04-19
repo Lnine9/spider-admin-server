@@ -6,10 +6,16 @@ class ProjectStatus(IntEnum):
 
 
 class TaskStatus(IntEnum):
-    UN_COMPLETED = 0
-    COMPLETED = 1
+    PENDING = 0
+    RUNNING = 1
+    COMPLETED = 2
 
 
 class ScheduleStatus(IntEnum):
     PAUSE = 0
     ACTIVE = 1
+
+
+class TaskMode(IntEnum):
+    INCREMENT = 1
+    RANGE = 2

@@ -54,6 +54,7 @@ class ProjectService:
     def add_project(cls, project):
         project['id'] = generate_uuid()
         cls.split_project(project)
+        project.start_time = datetime.datetime.now()
         Project.create(**project)
 
     @classmethod
@@ -89,7 +90,7 @@ class ProjectService:
                 'subject_id': project.get('subject_id'),
                 'range_start_time': range_start_time,
                 'range_end_time': range_end_time,
-                'status': TaskStatus.UN_COMPLETED
+                'status': TaskStatus.PENDING
             }
             TaskService.add_task(task)
             return
@@ -106,7 +107,8 @@ class ProjectService:
                 'subject_id': project.get('subject_id'),
                 'range_start_time': range_start_time,
                 'range_end_time': next_start_time,
-                'status': TaskStatus.UN_COMPLETED
+                'status': TaskStatus.PENDING,
+                'mode': project.get('mode')
             }
             TaskService.add_task(task)
-            start_time = next_start_time
+            range_start_time = next_start_time

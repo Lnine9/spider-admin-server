@@ -4,7 +4,7 @@ from utils.id import generate_uuid
 from service.project_service import ProjectService
 from service.scheduler import scheduler
 import datetime
-from constants.index import ProjectStatus, TaskStatus, ScheduleStatus
+from constants.index import ProjectStatus, TaskMode, ScheduleStatus
 from utils.index import resolve_cron
 from utils.logger import logger
 
@@ -30,7 +30,8 @@ def job(schedule_id):
         'subject_id': schedule.subject_id,
         'range_start_time': last_run_time,
         'range_end_time': now,
-        'status': ProjectStatus.UN_COMPLETED
+        'status': ProjectStatus.UN_COMPLETED,
+        'mode': TaskMode.INCREMENT,
     }
     schedule.last_run_time = now
     schedule.save()
