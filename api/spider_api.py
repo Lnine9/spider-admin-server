@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -24,9 +25,9 @@ def get_basic_info():
 
 @spider_api.get("/getSpiderList")
 def get_spider_list():
-    page_no = request.args.get("page_no")
-    page_size = request.args.get("page_size")
-    return SpiderService.get_spider_list(page_no,page_size)
+    page_no = int(request.args.get("page_no"))
+    page_size = int(request.args.get("page_size"))
+    return SpiderService.get_spider_list(page_no, page_size)
 
 
 """
@@ -37,12 +38,12 @@ def get_spider_list():
 
 @spider_api.post("/add")
 def add_spider_info():
-    return SpiderService.add_spider_info(request.form)
+    return SpiderService.add_spider_info(json.loads(request.data))
 
 
 @spider_api.post("/update")
 def update_spider_info():
-    return SpiderService.update_spider_info(request.form)
+    return SpiderService.update_spider_info(json.loads(request.data))
 
 
 @spider_api.post("/delete")
