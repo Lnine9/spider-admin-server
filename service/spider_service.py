@@ -24,8 +24,7 @@ class SpiderService:
 
     @classmethod
     def add_spider_info(self, form):
-        spider_info = SpiderInfo()
-        spider_info.id = generate_uuid()
+        spider_info = SpiderInfo().create(id=generate_uuid())
         spider_info.name = form.get('name')
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
@@ -67,14 +66,13 @@ class SpiderService:
 
     @classmethod
     def upload_file(self, request, path):
-        resolver = Resolver()
-        resolver.id = generate_uuid()
+        resolver = Resolver().create(id=generate_uuid())
         resolver.name = request.form.get('name')
         resolver.type = request.form.get('type')
         resolver.class_name = request.form.get('class_name')
         resolver.discription = request.form.get('discription')
         resolver.class_path = path
-        resolver.save()
+        res = resolver.save()
         result = {
             'resolver_id': resolver.id,
             'resolver_name': resolver.name
@@ -87,6 +85,6 @@ class SpiderService:
         return {"resolvers": resolver}
 
     @classmethod
-    def get_spider_list(self):
-        spider_info = SpiderInfo().select()
+    def get_spider_list(self, page_no=1, page_size=10):
+        spider_info = SpiderInfo().select().paginate(page_no, page_size)
         return {"spider_info": spider_info}

@@ -26,7 +26,7 @@ def get_basic_info():
 def get_spider_list():
     page_no = request.args.get("page_no")
     page_size = request.args.get("page_size")
-    return SpiderService.get_spider_list()
+    return SpiderService.get_spider_list(page_no,page_size)
 
 
 """
