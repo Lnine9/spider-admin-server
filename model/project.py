@@ -1,5 +1,6 @@
 from peewee import DateTimeField, CharField, IntegerField, SQL
 from model.base import BaseModel
+from playhouse.mysql_ext import JSONField
 
 
 class Project(BaseModel):
@@ -19,6 +20,7 @@ class Project(BaseModel):
     range_start_time = DateTimeField(null=True)
     range_end_time = DateTimeField(null=True)
     mode = IntegerField()
+    args = JSONField(null=True)
 
     class Meta:
         table_name = 'project'

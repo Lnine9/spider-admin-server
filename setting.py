@@ -8,3 +8,7 @@ MYSQL = {
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 SECRET_KEY = 'pSCEKxZd98zoBjZNYeAF8FXabgisCooOAwCnQVwi7iU'
+
+SCRAPY_PROJECT = {
+    'NAME': 'BASE_SPIDER',
+}

@@ -25,3 +25,9 @@ def add_node():
 def delete_node():
     id = request.json.get('id')
     return ScrapydService.delete_node(id)
+
+
+@scrapyd_api.post('/refresh')
+def refresh():
+    return ScrapydService.connect_nodes()
+

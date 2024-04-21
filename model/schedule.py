@@ -16,6 +16,8 @@ class Schedule(BaseModel):
     subject_id = CharField(null=True)
     update_time = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")], null=True)
     last_run_time = DateTimeField(null=True)
+    last_crawl_url = CharField(null=True)
+    last_crawl_time = DateTimeField(null=True)
 
     class Meta:
         table_name = 'schedule'

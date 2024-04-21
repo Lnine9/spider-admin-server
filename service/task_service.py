@@ -1,6 +1,7 @@
 from model.task import Task
 from model.subject import Subject
 from model.project import Project
+from model.schedule import Schedule
 from utils.id import generate_uuid
 from constants.index import TaskStatus
 import datetime
@@ -23,7 +24,8 @@ class TaskService:
 
     @classmethod
     def add_task(cls, task):
-        task['id'] = generate_uuid()
+        if task.get('project_id') is None:
+            task['id'] = generate_uuid()
         Task.create(**task)
 
     @classmethod
@@ -55,6 +57,10 @@ class TaskService:
     def update_task_status(cls, id, data):
         task = Task.get(Task.id == id)
         project = Project.get(Project.id == task.project_id)
+        is_from_schedule = project.schedule_id is not None
+        schedule = None
+        if is_from_schedule:
+            schedule = Schedule.get(Schedule.id == project.schedule_id)
         tasks = Task.select().where(Task.project_id == project.id)
 
         task.status = data.get('status')
@@ -71,6 +77,11 @@ class TaskService:
                 project.total_resolve += data.total_resolve
             if data.get('log_url') is not None:
                 task.log_url = data.get('log_url')
+            if is_from_schedule:
+                if data.get('last_crawl_time') is not None:
+                    schedule.last_crawl_time = data.get('last_crawl_time')
+                if data.get('last_crawl_url') is not None:
+                    schedule.last_crawl_url = data.get('last_crawl_url')
 
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
             project.status = TaskStatus.COMPLETED
@@ -78,3 +89,5 @@ class TaskService:
 
         task.save()
         project.save()
+        if is_from_schedule:
+            schedule.save()

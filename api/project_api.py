@@ -38,7 +38,8 @@ def add_project():
         'range_end_time': range_end_time,
         'mode': TaskMode.RANGE,
     }
-    return ProjectService.add_project(project)
+    node_id = request.json.get('node_id')
+    return ProjectService.add_project(project, node_id)
 
 
 @project_api.post('/update')

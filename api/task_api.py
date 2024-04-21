@@ -9,3 +9,4 @@ task_api = BlueprintAppApi(name="task", import_name=__name__)
 def get_task_by_project_id():
     project_id = request.args.get('project_id')
     return TaskService.get_task_by_project_id(project_id)
+

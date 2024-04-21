@@ -16,11 +16,15 @@ def job(schedule_id):
         return
 
     now = datetime.datetime.now()
-    print(now)
-    if schedule.last_run_time is None:
-        last_run_time = now - datetime.timedelta(minutes=schedule.slice_size)
-    else:
+    # 取最后一次抓取到的时间
+    if schedule.last_crawl_time is not None:
+        last_run_time = schedule.last_crawl_time
+    # 取最后一次运行时间
+    elif schedule.last_run_time is not None:
         last_run_time = schedule.last_run_time
+    # 取当前时间减去时间间隔
+    else:
+        last_run_time = now - datetime.timedelta(minutes=schedule.slice_size)
 
     project = {
         'name': f"{schedule.name}-{str(int(now.timestamp()))}",
@@ -32,6 +36,10 @@ def job(schedule_id):
         'range_end_time': now,
         'status': ProjectStatus.UN_COMPLETED,
         'mode': TaskMode.INCREMENT,
+        'args': {
+            'last_crawl_time': schedule.last_crawl_time,
+            'last_crawl_url': schedule.last_crawl_url,
+        }
     }
     schedule.last_run_time = now
     schedule.save()

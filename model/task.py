@@ -1,5 +1,5 @@
 from peewee import DateTimeField, CharField, TextField, BigIntegerField, IntegerField, SQL, ForeignKeyField
-from model.subject import Subject
+from playhouse.mysql_ext import JSONField
 
 from model.base import BaseModel
 
@@ -21,6 +21,8 @@ class Task(BaseModel):
     range_start_time = DateTimeField(null=True)
     range_end_time = DateTimeField(null=True)
     mode = IntegerField()
+    args = JSONField(null=True)
+    node_address = CharField(null=True)
 
     class Meta:
         table_name = 'task'

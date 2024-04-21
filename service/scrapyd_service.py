@@ -1,7 +1,9 @@
 from scrapyd_api import ScrapydClient
 from model.scrapyd_node import ScrapydNode
-from utils.id import generate_uuid
 from utils.logger import logger
+from model.task import Task
+from constants.index import TaskStatus
+from setting import SCRAPY_PROJECT
 
 
 class Client:
@@ -19,6 +21,10 @@ class ScrapydService:
 
     @classmethod
     def init(cls):
+        cls.connect_nodes()
+
+    @classmethod
+    def connect_nodes(cls):
         global clients
         records = ScrapydNode.select().dicts()
         clients = []
@@ -85,12 +91,66 @@ class ScrapydService:
     @classmethod
     def add_node(cls, node):
         ScrapydNode.create(**node)
-        cls.init()
+        cls.connect_nodes()
         return node
 
     @classmethod
     def delete_node(cls, id):
         node = ScrapydNode.get(ScrapydNode.id == id)
         node.delete_instance()
-        cls.init()
+        cls.connect_nodes()
         return True
+
+    @classmethod
+    def get_node_by_id(cls, id):
+        for c in clients:
+            if str(c.id) == str(id):
+                return c
+        return None
+
+    @classmethod
+    def get_least_busy_node(cls):
+        least_busy = None
+        for c in clients:
+            if c.instance is not None:
+                try:
+                    if c.instance.daemon_status().get('status') != 'ok':
+                        continue
+                    data = c.instance.list_projects()
+                    if least_busy is None or len(data) < least_busy:
+                        least_busy = c
+                except Exception as e:
+                    pass
+        return least_busy
+
+    @classmethod
+    def execute_task(cls, task_id, node_id):
+        task = Task.get(Task.id == task_id)
+        if task is None:
+            return
+        if task.status == TaskStatus.RUNNING or task.status == TaskStatus.COMPLETED:
+            return
+
+        if node_id is not None:
+            node = cls.get_node_by_id(node_id)
+            if node is not None:
+                try:
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=task.spider_id, **task)
+                    task.status = TaskStatus.RUNNING
+                    task.job_id = task_id
+                    task.node_address = node.address
+                    task.save()
+                except Exception as e:
+                    logger.error(f"Failed to execute task {task_id} on node {node_id}: {e}")
+        else:
+            node = cls.get_least_busy_node()
+            if node is not None:
+                try:
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=task.spider_id, **task)
+                    task.status = TaskStatus.RUNNING
+                    task.job_id = task_id
+                    task.node_address = node.address
+                    task.save()
+                except Exception as e:
+                    logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
+
