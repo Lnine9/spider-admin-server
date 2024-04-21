@@ -48,7 +48,7 @@ def update_spider_info():
 
 @spider_api.post("/delete")
 def delete_spider_info():
-    id = request.form.get("id")
+    id = json.loads(request.data)['id']
     return SpiderService.delete_spider_info(id)
 
 

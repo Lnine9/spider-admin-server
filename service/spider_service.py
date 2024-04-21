@@ -26,6 +26,7 @@ class SpiderService:
     def add_spider_info(self, form):
         spider_info = SpiderInfo().create(id=generate_uuid())
         spider_info.name = form.get('name')
+        spider_info.main_class = form.get('main_class')
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
         spider_info.description = form.get('description')
@@ -47,6 +48,7 @@ class SpiderService:
     def update_spider_info(self, form):
         spider_info = SpiderInfo.select().where(SpiderInfo.id == form['id']).first()
         spider_info.name = form.get('name')
+        spider_info.main_class = form.get('main_class')
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
         spider_info.description = form.get('description')
