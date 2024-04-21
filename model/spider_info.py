@@ -16,6 +16,7 @@ class SpiderInfo(BaseModel):
     body = TextField()
     url = TextField()
     resolvers = TextField()
+    main_class = CharField()
 
     class Meta:
         table_name = 'spider_info'
