@@ -26,6 +26,7 @@ def add_project():
     subject_id = request.json.get('subject_id')
     schedule_id = request.json.get('schedule_id')
     slice_size = request.json.get('slice_size')
+    spider_id = request.json.get('spider_id')
     range_start_time = datetime.datetime.fromtimestamp(request.json.get('range_start_time'))
     range_end_time = datetime.datetime.fromtimestamp(request.json.get('range_end_time'))
     project = {
@@ -33,6 +34,7 @@ def add_project():
         'subject_id': subject_id,
         'schedule_id': schedule_id,
         'slice_size': slice_size,
+        'spider_id': spider_id,
         'status': ProjectStatus.UN_COMPLETED,
         'range_start_time': range_start_time,
         'range_end_time': range_end_time,

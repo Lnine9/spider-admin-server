@@ -16,7 +16,6 @@ class Client:
 
 clients = []
 
-
 class ScrapydService:
 
     @classmethod
@@ -125,6 +124,7 @@ class ScrapydService:
 
     @classmethod
     def execute_task(cls, task_id, node_id):
+        print(task_id,node_id)
         task = Task.get(Task.id == task_id)
         if task is None:
             return
@@ -146,11 +146,19 @@ class ScrapydService:
             node = cls.get_least_busy_node()
             if node is not None:
                 try:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=task.spider_id, **task)
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='BASE_SPIDER', **task.__data__)
                     task.status = TaskStatus.RUNNING
                     task.job_id = task_id
                     task.node_address = node.address
                     task.save()
                 except Exception as e:
                     logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
+
+
+# scheduler.add_job(
+#             func=ScrapydService.connect_nodes,
+#             trigger='cron',
+#             second=30,
+#             replace_existing=True,
+#         )
 

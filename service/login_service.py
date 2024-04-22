@@ -22,7 +22,7 @@ class LoginService:
                 user = {
                     "id": query.id,
                     "user_name": query.user_name,
-                    "state": query.state
+                    "state": str(query.state)
                 }
                 token = generate_jwt_token(user)
                 return {"token": token}

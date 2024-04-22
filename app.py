@@ -16,7 +16,7 @@ register_blueprint(app)
 
 ScrapydService.init()
 
-# @app.before_request
+@app.before_request
 def before_request():
     """跨域请求会出现options，直接返回即可"""
     if request.method == 'OPTIONS':

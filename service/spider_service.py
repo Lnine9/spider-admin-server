@@ -12,7 +12,7 @@ class SpiderService:
 
     @classmethod
     def get_basic_info(self, spider_id):
-        spider_info = SpiderInfo.select().where(SpiderInfo.model_id == spider_id).first()
+        spider_info = SpiderInfo.select().where(SpiderInfo.id == spider_id).first()
         id_list = json.loads(spider_info.resolvers)
         if spider_info:
             resolvers = Resolver.select().where(Resolver.id.in_(id_list))
@@ -31,7 +31,9 @@ class SpiderService:
         spider_info.enable = 0
         spider_info.description = form.get('description')
         spider_info.section_page_size = form.get('section_page_size')
-        spider_info.callback = form.get('callback')
+        if spider_info.section_page_size == None:
+            spider_info.section_page_size = 1
+        spider_info.callback = 'parse'
         spider_info.method = form.get('method')
         spider_info.body = form.get('body')
         spider_info.url = form.get('url')

@@ -72,7 +72,7 @@ class ProjectService:
     def add_project(cls, project, node_id=None):
         project['id'] = generate_uuid()
         task_ids = cls.split_project(project)
-        project.start_time = datetime.datetime.now()
+        project['start_time'] = datetime.datetime.now()
         Project.create(**project)
         cls.execute_tasks(task_ids, node_id)
 
@@ -105,7 +105,7 @@ class ProjectService:
         if delta.total_seconds() == 0:
             task = generate_task(project, range_start_time, range_end_time)
             TaskService.add_task(task)
-            result.append(task.id)
+            result.append(task.get('id'))
             return result
         # 当时间间隔大于0时，按时间间隔切分任务
         while range_start_time < range_end_time:
@@ -114,7 +114,7 @@ class ProjectService:
             next_start_time = range_start_time + delta
             task = generate_task(project, range_start_time, next_start_time)
             TaskService.add_task(task)
-            result.append(task.id)
+            result.append(task.get('id'))
             range_start_time = next_start_time
 
         return result
