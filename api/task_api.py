@@ -10,3 +10,9 @@ def get_task_by_project_id():
     project_id = request.args.get('project_id')
     return TaskService.get_task_by_project_id(project_id)
 
+@task_api.post('/update_task_status')
+def update_task_status():
+    data = request.json
+    task_id = data.get('task_id')
+    return TaskService.update_task_status(task_id, data)
+

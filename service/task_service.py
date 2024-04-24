@@ -70,16 +70,18 @@ class TaskService:
         if (task.status == TaskStatus.COMPLETED) and (task.end_time is None):
             task.end_time = datetime.datetime.now()
             if data.get('total_crawl') is not None:
-                task.total_crawl = data.total_crawl
-                project.total_crawl += data.total_crawl
+                task.total_crawl = data.get('total_crawl')
+                project.total_crawl += data.get('total_crawl')
             if data.get('total_resolve') is not None:
-                task.total_resolve = data.total_resolve
-                project.total_resolve += data.total_resolve
+                task.total_resolve = data.get('total_resolve')
+                project.total_resolve += data.get('total_resolve')
             if data.get('log_url') is not None:
-                task.log_url = data.get('log_url')
+                log_url = data.get('log_url')
+                if log_url is not None:
+                    task.log_url = f'{task.node_address}{log_url}'
             if is_from_schedule:
-                if data.get('last_crawl_time') is not None:
-                    schedule.last_crawl_time = data.get('last_crawl_time')
+                if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
+                    schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
                 if data.get('last_crawl_url') is not None:
                     schedule.last_crawl_url = data.get('last_crawl_url')
 

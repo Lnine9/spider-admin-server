@@ -4,7 +4,7 @@ from utils.logger import logger
 from model.task import Task
 from constants.index import TaskStatus
 from setting import SCRAPY_PROJECT
-
+from service.scheduler import scheduler
 
 class Client:
     def __init__(self, id, name, address, instance):
@@ -128,37 +128,45 @@ class ScrapydService:
         task = Task.get(Task.id == task_id)
         if task is None:
             return
-        if task.status == TaskStatus.RUNNING or task.status == TaskStatus.COMPLETED:
+        if task.status == TaskStatus.SCHEDULED or task.status == TaskStatus.COMPLETED:
             return
+
+        params = dict(task.__data__)
+        params.update({
+            'task_id': params.get('id'),
+        })
 
         if node_id is not None:
             node = cls.get_node_by_id(node_id)
             if node is not None:
                 try:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=task.spider_id, **task)
-                    task.status = TaskStatus.RUNNING
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='AnnouncementSpider', **params)
+                    task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
                     task.save()
                 except Exception as e:
                     logger.error(f"Failed to execute task {task_id} on node {node_id}: {e}")
+                    raise e
         else:
             node = cls.get_least_busy_node()
             if node is not None:
                 try:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='BASE_SPIDER', **task.__data__)
-                    task.status = TaskStatus.RUNNING
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='AnnouncementSpider', **params)
+                    task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
                     task.save()
                 except Exception as e:
                     logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
+                    raise e
 
 
-# scheduler.add_job(
-#             func=ScrapydService.connect_nodes,
-#             trigger='cron',
-#             second=30,
-#             replace_existing=True,
-#         )
+scheduler.add_job(
+            id='auto_connect_nodes',
+            func=ScrapydService.connect_nodes,
+            trigger='cron',
+            second=30,
+            replace_existing=True,
+        )
 

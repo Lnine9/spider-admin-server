@@ -7,8 +7,10 @@ class ProjectStatus(IntEnum):
 
 class TaskStatus(IntEnum):
     PENDING = 0
-    RUNNING = 1
-    COMPLETED = 2
+    SCHEDULED = 1
+    RUNNING = 2
+    COMPLETED = 3
+    ERROR = 4
 
 
 class ScheduleStatus(IntEnum):
