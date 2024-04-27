@@ -81,9 +81,12 @@ class TaskService:
                     task.log_url = f'{task.node_address}{log_url}'
             if is_from_schedule:
                 if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
-                    schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
-                if data.get('last_crawl_url') is not None:
-                    schedule.last_crawl_url = data.get('last_crawl_url')
+                    last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
+                    # 当计划没有最后一次抓取到的公告时间，或最后一次晚于当前任务的抓取到的公告时间
+                    if schedule.last_crawl_time is None or schedule.last_crawl_time < last_crawl_time:
+                        schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
+                        schedule.last_crawl_url = data.get('last_crawl_url')
+
 
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
             project.status = TaskStatus.COMPLETED
