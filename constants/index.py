@@ -3,6 +3,7 @@ from enum import IntEnum
 class ProjectStatus(IntEnum):
     UN_COMPLETED = 0
     COMPLETED = 1
+    HAS_ERROR = 2
 
 
 class TaskStatus(IntEnum):

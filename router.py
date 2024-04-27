@@ -5,6 +5,7 @@ from api.schedule_api import schedule_api
 from api.project_api import project_api
 from api.task_api import task_api
 from api.scrapyd_api import scrapyd_api
+from api.statistic_api import statistic_api
 
 ROUTES = {
     '/api/subject': subject_api,
@@ -13,7 +14,8 @@ ROUTES = {
     '/api/project': project_api,
     '/api/task': task_api,
     '/api/spider': spider_api,
-    '/api/scrapyd': scrapyd_api
+    '/api/scrapyd': scrapyd_api,
+    '/api/statistic': statistic_api,
 }
 
 

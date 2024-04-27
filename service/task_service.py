@@ -3,7 +3,7 @@ from model.subject import Subject
 from model.project import Project
 from model.schedule import Schedule
 from utils.id import generate_uuid
-from constants.index import TaskStatus
+from constants.index import TaskStatus, ProjectStatus
 import datetime
 
 
@@ -76,9 +76,7 @@ class TaskService:
                 task.total_resolve = data.get('total_resolve')
                 project.total_resolve += data.get('total_resolve')
             if data.get('log_url') is not None:
-                log_url = data.get('log_url')
-                if log_url is not None:
-                    task.log_url = f'{task.node_address}{log_url}'
+                task.log_url = f'{task.node_address}{data.get("log_url")}'
             if is_from_schedule:
                 if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
                     last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
@@ -87,9 +85,14 @@ class TaskService:
                         schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
                         schedule.last_crawl_url = data.get('last_crawl_url')
 
+        if task.status == TaskStatus.ERROR:
+            task.end_time = datetime.datetime.now()
+            project.status = ProjectStatus.HAS_ERROR
+            if data.get('log_url') is not None:
+                task.log_url = f'{task.node_address}{data.get("log_url")}'
 
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
-            project.status = TaskStatus.COMPLETED
+            project.status = ProjectStatus.COMPLETED
             project.end_time = datetime.datetime.now()
 
         task.save()
