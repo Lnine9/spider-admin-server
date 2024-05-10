@@ -9,8 +9,8 @@ from service.task_service import TaskService
 from service.scrapyd_service import ScrapydService
 
 # 最小切分时间间隔, 用于处理拆分到最后一段时间间隔过小的情况
-MIN_SLICE = 10
-MIN_SLICE_DATETIME = datetime.timedelta(minutes=MIN_SLICE)
+# MIN_SLICE = 10
+# MIN_SLICE_DATETIME = datetime.timedelta(minutes=MIN_SLICE)
 
 
 def generate_task(project, range_start_time, range_end_time):
@@ -43,6 +43,8 @@ class ProjectService:
                  .paginate(int(params.get('page_num')), int(params.get('page_size'))))
         if 'subject_id' in params:
             query = query.where(Project.subject_id == params['subject_id'])
+        if 'schedule_id' in params:
+            query = query.where(Project.schedule_id == params['schedule_id'])
         if 'status' in params:
             query = query.where(Project.status == params['status'])
         if 'name' in params:
@@ -68,13 +70,7 @@ class ProjectService:
                 .dicts().get())
         return find
 
-    @classmethod
-    def add_project(cls, project, node_id=None):
-        project['id'] = generate_uuid()
-        task_ids = cls.split_project(project)
-        project['start_time'] = datetime.datetime.now()
-        Project.create(**project)
-        cls.execute_tasks(task_ids, node_id)
+
 
     @classmethod
     def update_project(cls, id, new_project):
@@ -93,6 +89,14 @@ class ProjectService:
         local.delete_instance()
 
     @classmethod
+    def add_project(cls, project, node_id=None):
+        project['id'] = generate_uuid()
+        task_ids = cls.split_project(project)
+        project['start_time'] = datetime.datetime.now()
+        Project.create(**project)
+        cls.execute_tasks(task_ids, node_id)
+
+    @classmethod
     def split_project(cls, project):
         slice_size = project.get('slice_size')
         range_start_time = project.get('range_start_time')
@@ -109,8 +113,8 @@ class ProjectService:
             return result
         # 当时间间隔大于0时，按时间间隔切分任务
         while range_start_time < range_end_time:
-            if range_end_time - range_start_time < MIN_SLICE_DATETIME:
-                break
+            # if range_end_time - range_start_time < MIN_SLICE_DATETIME:
+            #     break
             next_start_time = range_start_time + delta
             task = generate_task(project, range_start_time, next_start_time)
             TaskService.add_task(task)

@@ -1,3 +1,6 @@
+import json
+import logging
+
 from model.task import Task
 from model.subject import Subject
 from model.project import Project
@@ -55,6 +58,7 @@ class TaskService:
 
     @classmethod
     def update_task_status(cls, id, data):
+        print(f'update task status: {id}, {json.dumps(data, ensure_ascii=False)}')
         task = Task.get(Task.id == id)
         project = Project.get(Project.id == task.project_id)
         is_from_schedule = project.schedule_id is not None
@@ -75,8 +79,6 @@ class TaskService:
             if data.get('total_resolve') is not None:
                 task.total_resolve = data.get('total_resolve')
                 project.total_resolve += data.get('total_resolve')
-            if data.get('log_url') is not None:
-                task.log_url = f'{task.node_address}{data.get("log_url")}'
             if is_from_schedule:
                 if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
                     last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
@@ -91,11 +93,15 @@ class TaskService:
             if data.get('log_url') is not None:
                 task.log_url = f'{task.node_address}{data.get("log_url")}'
 
+        if data.get('log_url') is not None:
+            task.log_url = f'{task.node_address}{data.get("log_url")}'
+
+        task.save()
+
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
             project.status = ProjectStatus.COMPLETED
             project.end_time = datetime.datetime.now()
 
-        task.save()
         project.save()
         if is_from_schedule:
             schedule.save()

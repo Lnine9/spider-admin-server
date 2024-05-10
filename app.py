@@ -22,10 +22,6 @@ def before_request():
     if request.method == 'OPTIONS':
         return make_response()
 
-    '''将jwt生成的私钥放入环境变量中'''
-    if os.getenv('JWT_SECRET_KEY') is None:
-        os.environ['JWT_SECRET_KEY'] = SECRET_KEY
-
     '''设置页面登录拦截，判断token是否存在或过期'''
     if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
         token = request.headers.get('Authorization')
@@ -36,7 +32,7 @@ def before_request():
             return Response('token已过期', 401)
 
 
-# @app.after_request
+@app.after_request
 def after_request(response):
     '''刷新token'''
     if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
@@ -49,4 +45,4 @@ def after_request(response):
 
 
 if __name__ == '__main__':
-    app.run(port=2024, debug=True)
+    app.run(port=2024, debug=True, use_reloader=False)

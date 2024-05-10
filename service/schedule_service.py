@@ -27,7 +27,7 @@ def job(schedule_id):
         last_run_time = now - datetime.timedelta(minutes=schedule.slice_size)
 
     project = {
-        'name': f"{schedule.name}-{str(int(now.timestamp()))}",
+        'name': f"{schedule.name}-{now.strftime('%Y%m%d%H%M%S')}",
         'schedule_id': schedule.id,
         'slice_size': schedule.slice_size,
         'spider_id': schedule.spider_id,

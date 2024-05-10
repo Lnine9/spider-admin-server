@@ -18,9 +18,9 @@ class LoginService:
             query = User.select(User).where(User.user_name == user_name).first()
             if query is None:
                 return Response("登录失败", 500)
-            if hashlib.sha256(password.encode()).hexdigest() == query.password:
+            if password == query.password:
                 user = {
-                    "id": query.id,
+                    "id": str(query.id),
                     "user_name": query.user_name,
                     "state": str(query.state)
                 }

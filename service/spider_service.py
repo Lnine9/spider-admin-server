@@ -24,7 +24,7 @@ class SpiderService:
 
     @classmethod
     def add_spider_info(self, form):
-        spider_info = SpiderInfo().create(id=generate_uuid())
+        spider_info = SpiderInfo().create()
         spider_info.name = form.get('name')
         spider_info.main_class = form.get('main_class')
         spider_info.an_type = form.get('an_type')
