@@ -30,19 +30,19 @@ class SpiderService:
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
         spider_info.description = form.get('description')
-        spider_info.section_page_size = form.get('section_page_size')
-        if spider_info.section_page_size == None:
-            spider_info.section_page_size = 1
         spider_info.callback = 'parse'
         spider_info.method = form.get('method')
         spider_info.body = form.get('body')
         spider_info.url = form.get('url')
-        spider_info.base_path = form.get('base_path')
-        spider_info.resolvers = json.dumps(form.get('resolvers'))
+        resolvers = form.get('resolvers')
+        if resolvers is None or resolvers == '':
+            resolvers = []
+        spider_info.resolvers = json.dumps(resolvers)
+        spider_info.crawl_speed = form.get('crawl_speed')
         spider_info.save()
         result = {
             'spider_id': spider_info.id,
-            'spider_name': spider_info.id
+            'spider_name': spider_info.name
         }
         return result
 
@@ -54,13 +54,15 @@ class SpiderService:
         spider_info.an_type = form.get('an_type')
         spider_info.enable = 0
         spider_info.description = form.get('description')
-        spider_info.section_page_size = form.get('section_page_size')
         spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
         spider_info.body = form.get('body')
         spider_info.url = form.get('url')
-        spider_info.base_path = form.get('base_path')
-        spider_info.resolvers = json.dumps(form.get('resolvers'))
+        resolvers = form.get('resolvers')
+        if resolvers is None or resolvers == '':
+            resolvers = []
+        spider_info.resolvers = json.dumps(resolvers)
+        spider_info.crawl_speed = form.get('crawl_speed')
         spider_info.save()
 
     @classmethod
@@ -93,3 +95,25 @@ class SpiderService:
         spider_info = SpiderInfo().select().paginate(page_no, page_size)
         total = SpiderInfo.select().count()
         return {"spider_info": spider_info, "total": total}
+
+
+    @classmethod
+    def add_resolver(cls, form):
+        resolver = Resolver().create()
+        resolver.name = form.get('name')
+        resolver.type = form.get('type')
+        resolver.class_name = form.get('class_name')
+        resolver.discription = form.get('discription')
+        resolver.class_path = form.get('class_path')
+        resolver.save()
+        return {"resolver_id": resolver.id}
+
+    @classmethod
+    def delete_resolver(cls, form):
+        id = form.get('id')
+        Resolver.delete().where(Resolver.id == id).execute()
+
+    @classmethod
+    def resolver_list(cls):
+        resolver = Resolver().select().dicts()
+        return {"list": resolver, "total": len(resolver)}

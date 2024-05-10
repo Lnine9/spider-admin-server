@@ -52,6 +52,18 @@ def delete_spider_info():
     return SpiderService.delete_spider_info(id)
 
 
+@spider_api.post("/add_resolver")
+def add_resolver():
+    return SpiderService.add_resolver(request.json)
+
+@spider_api.post("/delete_resolver")
+def delete_resolver():
+    return SpiderService.delete_resolver(request.json)
+
+@spider_api.get("/resolver_list")
+def resolver_list():
+    return SpiderService.resolver_list()
+
 """
 爬虫文件上传
 :return:
@@ -61,8 +73,7 @@ def delete_spider_info():
 @spider_api.post("/upload")
 def upload_file():
     file = request.files['MultiDict']
-    user_name = decode_jwt_token(request.headers.get('Authorization'))['user_name']
-    pre_path = "/spiders/" + user_name + "/"
+    pre_path = "/spiders/"
     path = pre_path + f"{secure_filename(file.filename)}"
     os.makedirs(os.path.dirname(pre_path), exist_ok=True)
     file.save(path)
