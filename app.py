@@ -16,6 +16,13 @@ register_blueprint(app)
 
 ScrapydService.init()
 
+WHITE_LIST = [
+    '/api/sign',
+    '/api/spider/baseInfo',
+    '/api/task/update_task_status',
+]
+
+
 @app.before_request
 def before_request():
     """跨域请求会出现options，直接返回即可"""
@@ -23,7 +30,7 @@ def before_request():
         return make_response()
 
     '''设置页面登录拦截，判断token是否存在或过期'''
-    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
+    if not any([request.path.startswith(url) for url in WHITE_LIST]):
         token = request.headers.get('Authorization')
         if token is None:
             return Response('用户未登录', 401)
@@ -35,7 +42,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     '''刷新token'''
-    if (request.path.startswith('/api/sign') or request.path.startswith('/api/spider/baseInfo')) is False:
+    if not any([request.path.startswith(url) for url in WHITE_LIST]):
         token = request.headers.get('Authorization')
         if token is not None:
             auth = decode_jwt_token(token)

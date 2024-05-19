@@ -57,12 +57,15 @@ class ScheduleService:
             .select(Schedule, Subject.name.alias('subject_name'))
             .left_outer_join(Subject, on=(Schedule.subject_id == Subject.id))
             .order_by(Schedule.create_time.desc())
-            .paginate(int(params.get('page_num')), int(params.get('page_size')))
         )
+
+        total = query.count()
+
+        query = query.paginate(int(params.get('page_num')), int(params.get('page_size')))
 
         result = {
             'list': query.dicts(),
-            'total': query.count()
+            'total': total
         }
 
         return result

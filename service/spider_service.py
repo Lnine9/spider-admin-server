@@ -105,6 +105,7 @@ class SpiderService:
         resolver.class_name = form.get('class_name')
         resolver.discription = form.get('discription')
         resolver.class_path = form.get('class_path')
+        resolver.version_no = 1
         resolver.save()
         return {"resolver_id": resolver.id}
 

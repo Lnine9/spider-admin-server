@@ -31,6 +31,7 @@ class SubjectService:
         local = Subject.get(Subject.id == id)
         local.name = new_subject['name']
         local.description = new_subject['description']
+        local.url = new_subject['url']
         local.save()
 
     @classmethod

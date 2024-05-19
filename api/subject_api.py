@@ -20,9 +20,11 @@ def get_subject_by_id():
 def add_subject():
     name = request.json.get('name')
     description = request.json.get('description')
+    url = request.json.get('url')
     subject = {
         'name': name,
-        'description': description
+        'description': description,
+        'url': url
     }
     return SubjectService.add_subject(subject)
 

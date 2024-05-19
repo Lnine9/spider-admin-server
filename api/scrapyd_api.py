@@ -31,3 +31,9 @@ def delete_node():
 def refresh():
     return ScrapydService.connect_nodes()
 
+
+@scrapyd_api.post("/update_egg")
+def update_egg():
+    egg = request.files['egg']
+    id = request.form['id']
+    return ScrapydService.update_node_egg(id, egg)

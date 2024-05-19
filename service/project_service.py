@@ -1,3 +1,5 @@
+from threading import Thread
+
 from model.project import Project
 from model.subject import Subject
 from model.schedule import Schedule
@@ -39,8 +41,7 @@ class ProjectService:
                  .select(Project, Subject.name.alias('subject_name'), Schedule.name.alias('schedule_name'))
                  .left_outer_join(Subject, on=(Project.subject_id == Subject.id))
                  .left_outer_join(Schedule, on=(Project.schedule_id == Schedule.id))
-                 .order_by(Project.create_time.desc())
-                 .paginate(int(params.get('page_num')), int(params.get('page_size'))))
+                 .order_by(Project.create_time.desc()))
         if 'subject_id' in params:
             query = query.where(Project.subject_id == params['subject_id'])
         if 'schedule_id' in params:
@@ -54,9 +55,13 @@ class ProjectService:
         if 'create_time_end' in params:
             query = query.where(Project.create_time <= params['create_time_end'])
 
+        total = query.count()
+
+        query = query.paginate(int(params.get('page_num')), int(params.get('page_size')))
+
         result = {
             'list': query.dicts(),
-            'total': query.count()
+            'total': total
         }
         return result
 
@@ -94,7 +99,7 @@ class ProjectService:
         task_ids = cls.split_project(project)
         project['start_time'] = datetime.datetime.now()
         Project.create(**project)
-        cls.execute_tasks(task_ids, node_id)
+        Thread(target=cls.execute_tasks, args=(task_ids, node_id)).start()
 
     @classmethod
     def split_project(cls, project):

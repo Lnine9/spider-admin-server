@@ -2,9 +2,11 @@ from scrapyd_api import ScrapydClient
 from model.scrapyd_node import ScrapydNode
 from utils.logger import logger
 from model.task import Task
+from model.spider_info import SpiderInfo
 from constants.index import TaskStatus
 from setting import SCRAPY_PROJECT
 from service.scheduler import scheduler
+from shutil import copyfileobj
 
 class Client:
     def __init__(self, id, name, address, instance):
@@ -15,6 +17,7 @@ class Client:
 
 
 clients = []
+
 
 class ScrapydService:
 
@@ -31,11 +34,8 @@ class ScrapydService:
         for record in records:
             try:
                 client_instance = ScrapydClient(record['address'])
-                print(f"Connected to the scrapyd node: {record['name']}, {record['address']}")
-                print(client_instance.daemon_status())
                 clients.append(Client(record['id'], record['name'], record['address'], client_instance))
             except Exception as e:
-                print(f"Failed to connect to the scrapyd node: {record['name']}, {record['address']}: {e}")
                 clients.append(Client(record['id'], record['name'], record['address'], None))
 
     @classmethod
@@ -124,11 +124,15 @@ class ScrapydService:
 
     @classmethod
     def execute_task(cls, task_id, node_id):
-        print(task_id,node_id)
+        print(task_id, node_id)
         task = Task.get(Task.id == task_id)
         if task is None:
             return
         if task.status == TaskStatus.SCHEDULED or task.status == TaskStatus.COMPLETED:
+            return
+
+        spider = SpiderInfo.get(SpiderInfo.id == task.spider_id)
+        if spider is None:
             return
 
         params = dict(task.__data__)
@@ -140,7 +144,7 @@ class ScrapydService:
             node = cls.get_node_by_id(node_id)
             if node is not None:
                 try:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='AnnouncementSpider', **params)
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
@@ -152,7 +156,7 @@ class ScrapydService:
             node = cls.get_least_busy_node()
             if node is not None:
                 try:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider='AnnouncementSpider', **params)
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
@@ -161,12 +165,41 @@ class ScrapydService:
                     logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
                     raise e
 
+    @classmethod
+    def update_egg(cls, egg):
+        for c in clients:
+            if c.instance is not None:
+                try:
+                    c.instance.daemon_status()
+                except Exception as e:
+                    continue
+                try:
+                    c.instance.add_version(project=SCRAPY_PROJECT['NAME'], egg=egg)
+                except Exception as e:
+                    logger.error(f"Failed to update egg on node {c.id}: {e}")
+                    raise e
+        return
+
+    @classmethod
+    def update_node_egg(cls, node_id, egg):
+        node = cls.get_node_by_id(node_id)
+        if node is not None:
+            try:
+                node.instance.daemon_status()
+            except Exception as e:
+                return False
+            try:
+                node.instance.add_version(project=SCRAPY_PROJECT['NAME'], egg=egg)
+            except Exception as e:
+                logger.error(f"Failed to update egg on node {node_id}: {e}")
+                raise e
+        return
+
 
 scheduler.add_job(
-            id='auto_connect_nodes',
-            func=ScrapydService.connect_nodes,
-            trigger='cron',
-            second=30,
-            replace_existing=True,
-        )
-
+    id='auto_connect_nodes',
+    func=ScrapydService.connect_nodes,
+    trigger='cron',
+    second=30,
+    replace_existing=True,
+)
