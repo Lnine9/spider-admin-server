@@ -14,3 +14,8 @@ def schedule_statistic():
 @statistic_api.get('/running_projects')
 def running_projects():
     return StatisticService.running_projects()
+
+
+@statistic_api.get('/last_24h_task_count')
+def last_24h_task_count():
+    return StatisticService.last_24h_task_count()

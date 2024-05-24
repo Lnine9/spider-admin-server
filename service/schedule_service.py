@@ -24,7 +24,11 @@ def job(schedule_id):
         last_run_time = schedule.last_run_time
     # 取当前时间减去时间间隔
     else:
-        last_run_time = now - datetime.timedelta(minutes=schedule.slice_size)
+        last_run_time = now - datetime.timedelta(days=1)
+
+    last_crawl_time = None
+    if schedule.last_crawl_time is not None:
+        last_crawl_time = schedule.last_crawl_time.strftime('%Y%m%d%H%M%S')
 
     project = {
         'name': f"{schedule.name}-{now.strftime('%Y%m%d%H%M%S')}",
@@ -37,7 +41,7 @@ def job(schedule_id):
         'status': ProjectStatus.UN_COMPLETED,
         'mode': TaskMode.INCREMENT,
         'args': {
-            'last_crawl_time': schedule.last_crawl_time,
+            'last_crawl_time': last_crawl_time,
             'last_crawl_url': schedule.last_crawl_url,
         }
     }

@@ -28,7 +28,7 @@ class SpiderService:
         spider_info.name = form.get('name')
         spider_info.main_class = form.get('main_class')
         spider_info.an_type = form.get('an_type')
-        spider_info.enable = 0
+        spider_info.enable = 1
         spider_info.description = form.get('description')
         spider_info.callback = 'parse'
         spider_info.method = form.get('method')
@@ -52,7 +52,7 @@ class SpiderService:
         spider_info.name = form.get('name')
         spider_info.main_class = form.get('main_class')
         spider_info.an_type = form.get('an_type')
-        spider_info.enable = 0
+        spider_info.enable = 1
         spider_info.description = form.get('description')
         spider_info.callback = form.get('callback')
         spider_info.method = form.get('method')
@@ -92,8 +92,8 @@ class SpiderService:
 
     @classmethod
     def get_spider_list(self, page_no=1, page_size=10):
-        spider_info = SpiderInfo().select().paginate(page_no, page_size)
-        total = SpiderInfo.select().count()
+        spider_info = SpiderInfo().select().where(SpiderInfo.enable == 1).paginate(page_no, page_size)
+        total = SpiderInfo.select().where(SpiderInfo.enable == 1).count()
         return {"spider_info": spider_info, "total": total}
 
 

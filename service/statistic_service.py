@@ -15,14 +15,14 @@ class ScheduleStatistic:
     project_count = 0
     crawl_count = 0
     resolve_count = 0
-    total_run_time_min = 0
-    ave_run_time_min = 0
+    total_run_time = 0
+    ave_run_time = 0
 
     def __init__(self):
         pass
 
 
-class ProjectStatistic:
+class RunningProjectStatistic:
     project_info = None
     process = 0
     task_count = 0
@@ -60,8 +60,8 @@ class StatisticService:
                 project_count = 0
                 crawl_count = 0
                 resolve_count = 0
-                total_run_time_min = 0
-                ave_run_time_min = 0
+                total_run_time = 0
+                ave_run_time = 0
 
                 for project in projects:
                     try:
@@ -69,18 +69,19 @@ class StatisticService:
                             project_count += 1
                             crawl_count += project.total_crawl
                             resolve_count += project.total_resolve
-                            total_run_time_min += (project.end_time - project.start_time).total_seconds() / 60
+                            if project.start_time is not None and project.end_time is not None:
+                                total_run_time += (project.end_time - project.start_time).total_seconds()
                     except Exception as e:
                         logging.error(f"project: {project.id} error: {e}")
 
                 if project_count > 0:
-                    ave_run_time_min = total_run_time_min // project_count
+                    ave_run_time = total_run_time // project_count
 
                 schedule_statistic.project_count = project_count
                 schedule_statistic.crawl_count = crawl_count
                 schedule_statistic.resolve_count = resolve_count
-                schedule_statistic.total_run_time_min = total_run_time_min
-                schedule_statistic.ave_run_time_min = ave_run_time_min
+                schedule_statistic.total_run_time = total_run_time
+                schedule_statistic.ave_run_time = ave_run_time
                 result.append(schedule_statistic.__dict__)
             except Exception as e:
                 logging.error(f"schedule: {schedule.id} error: {e}")
@@ -98,7 +99,7 @@ class StatisticService:
 
         for project in projects:
             try:
-                project_statistic = ProjectStatistic()
+                project_statistic = RunningProjectStatistic()
                 project_statistic.project_info = project.__data__
                 tasks = Task.select().where(Task.project_id == project.id)
                 project_statistic.task_count = tasks.count()
@@ -111,5 +112,31 @@ class StatisticService:
                 result.append(project_statistic.__dict__)
             except Exception as e:
                 logging.error(f"project: {project.id} error: {e}")
+
+        return result
+
+    @classmethod
+    def last_24h_task_count(cls):
+        result = []
+        logging.info(f"collecting last 24h task statistics")
+        now = datetime.datetime.now()
+        start_time = now - datetime.timedelta(days=1)
+        start_time = start_time.replace(minute=0, second=0, microsecond=0)
+        tasks = (Task
+                 .select(Task, Subject.name.alias('subject_name'), Project.name.alias('project_name'))
+                 .where((Task.create_time >= start_time) & (Task.create_time <= now)))
+
+        slice_size = 2
+        delta = datetime.timedelta(hours=slice_size)
+        while start_time < now:
+            try:
+                task_count = tasks.where((Task.create_time >= start_time) & (Task.create_time <= start_time + delta)).count()
+                result.append({
+                    'time': start_time,
+                    'task_count': task_count
+                })
+                start_time += delta
+            except Exception as e:
+                logging.error(f"error: {e}")
 
         return result

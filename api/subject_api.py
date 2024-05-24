@@ -32,13 +32,7 @@ def add_subject():
 @subject_api.post('/update')
 def update_subject():
     id = request.json.get('id')
-    name = request.json.get('name')
-    description = request.json.get('description')
-    subject = {
-        'name': name,
-        'description': description
-    }
-    return SubjectService.update_subject(id, subject)
+    return SubjectService.update_subject(id, request.json)
 
 
 @subject_api.post('/delete')

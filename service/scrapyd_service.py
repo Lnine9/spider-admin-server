@@ -6,7 +6,6 @@ from model.spider_info import SpiderInfo
 from constants.index import TaskStatus
 from setting import SCRAPY_PROJECT
 from service.scheduler import scheduler
-from shutil import copyfileobj
 
 class Client:
     def __init__(self, id, name, address, instance):
@@ -51,12 +50,15 @@ class ScrapydService:
                 except Exception as e:
                     status = 0
 
-            result.append({
+            data = {
                 'id': c.id,
                 'name': c.name,
                 'address': c.address,
-                'status': status
-            })
+                'status': status,
+            }
+            if status == 1:
+                data = { **deamon_status, **data}
+            result.append(data)
 
         return {
             'list': result,
@@ -109,22 +111,24 @@ class ScrapydService:
 
     @classmethod
     def get_least_busy_node(cls):
-        least_busy = None
+        least_busy_node = None
+        min_busy = 999999
         for c in clients:
             if c.instance is not None:
                 try:
                     if c.instance.daemon_status().get('status') != 'ok':
                         continue
-                    data = c.instance.list_projects()
-                    if least_busy is None or len(data) < least_busy:
-                        least_busy = c
+                    data = c.instance.list_jobs_merge(SCRAPY_PROJECT['NAME'])
+                    busy = data.get('pending') + data.get('running')
+                    if least_busy_node is None or busy < min_busy:
+                        least_busy_node = c
+                        min_busy = busy
                 except Exception as e:
                     pass
-        return least_busy
+        return least_busy_node
 
     @classmethod
     def execute_task(cls, task_id, node_id):
-        print(task_id, node_id)
         task = Task.get(Task.id == task_id)
         if task is None:
             return
@@ -140,30 +144,34 @@ class ScrapydService:
             'task_id': params.get('id'),
         })
 
+        node = None
+
         if node_id is not None:
-            node = cls.get_node_by_id(node_id)
-            if node is not None:
-                try:
+            try:
+                node = cls.get_node_by_id(node_id)
+                if node is not None:
                     node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
                     task.save()
-                except Exception as e:
-                    logger.error(f"Failed to execute task {task_id} on node {node_id}: {e}")
-                    raise e
+            except Exception as e:
+                logger.error(f"Failed to execute task {task_id} on node {node_id}: {e}")
+                raise e
         else:
-            node = cls.get_least_busy_node()
-            if node is not None:
-                try:
+            try:
+                node = cls.get_least_busy_node()
+                if node is not None:
                     node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
                     task.save()
-                except Exception as e:
-                    logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
-                    raise e
+            except Exception as e:
+                logger.error(f"Failed to execute task {task_id} on node {node.id}: {e}")
+                raise e
+
+        print(f"Task {task_id} scheduled on node {node.address}")
 
     @classmethod
     def update_egg(cls, egg):

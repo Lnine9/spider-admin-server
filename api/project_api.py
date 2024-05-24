@@ -29,6 +29,7 @@ def add_project():
     spider_id = request.json.get('spider_id')
     range_start_time = datetime.datetime.fromtimestamp(request.json.get('range_start_time'))
     range_end_time = datetime.datetime.fromtimestamp(request.json.get('range_end_time'))
+    mode = request.json.get('mode')
     project = {
         'name': name,
         'subject_id': subject_id,
@@ -38,7 +39,7 @@ def add_project():
         'status': ProjectStatus.UN_COMPLETED,
         'range_start_time': range_start_time,
         'range_end_time': range_end_time,
-        'mode': TaskMode.RANGE,
+        'mode': TaskMode.RANGE if mode is None else mode,
     }
     node_id = request.json.get('node_id')
     return ProjectService.add_project(project, node_id)

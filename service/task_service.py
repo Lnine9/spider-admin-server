@@ -73,34 +73,36 @@ class TaskService:
 
         if (task.status == TaskStatus.COMPLETED) and (task.end_time is None):
             task.end_time = datetime.datetime.now()
-            if data.get('total_crawl') is not None:
-                task.total_crawl = data.get('total_crawl')
-                project.total_crawl += data.get('total_crawl')
-            if data.get('total_resolve') is not None:
-                task.total_resolve = data.get('total_resolve')
-                project.total_resolve += data.get('total_resolve')
-            if is_from_schedule:
-                if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
-                    last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
-                    # 当计划没有最后一次抓取到的公告时间，或最后一次晚于当前任务的抓取到的公告时间
-                    if schedule.last_crawl_time is None or schedule.last_crawl_time < last_crawl_time:
-                        schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
-                        schedule.last_crawl_url = data.get('last_crawl_url')
 
         if task.status == TaskStatus.ERROR:
             task.end_time = datetime.datetime.now()
             project.status = ProjectStatus.HAS_ERROR
-            if data.get('log_url') is not None:
-                task.log_url = f'{task.node_address}{data.get("log_url")}'
+
+        if data.get('total_crawl') is not None:
+            task.total_crawl = data.get('total_crawl')
+            project.total_crawl += data.get('total_crawl')
+        if data.get('total_resolve') is not None:
+            task.total_resolve = data.get('total_resolve')
+            project.total_resolve += data.get('total_resolve')
+        if is_from_schedule:
+            if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
+                last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
+                # 当计划没有最后一次抓取到的公告时间，或最后一次晚于当前任务的抓取到的公告时间
+                if schedule.last_crawl_time is None or schedule.last_crawl_time < last_crawl_time:
+                    schedule.last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
+                    schedule.last_crawl_url = data.get('last_crawl_url')
+
 
         if data.get('log_url') is not None:
             task.log_url = f'{task.node_address}{data.get("log_url")}'
 
         task.save()
 
+        if all([t.status not in [TaskStatus.SCHEDULED, TaskStatus.PENDING, TaskStatus.RUNNING] for t in tasks]):
+            project.end_time = datetime.datetime.now()
+
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
             project.status = ProjectStatus.COMPLETED
-            project.end_time = datetime.datetime.now()
 
         project.save()
         if is_from_schedule:
