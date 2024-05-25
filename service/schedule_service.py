@@ -28,7 +28,7 @@ def job(schedule_id):
 
     last_crawl_time = None
     if schedule.last_crawl_time is not None:
-        last_crawl_time = schedule.last_crawl_time.strftime('%Y%m%d%H%M%S')
+        last_crawl_time = schedule.last_crawl_time.strftime('%Y-%m-%d %H:%M:%S')
 
     project = {
         'name': f"{schedule.name}-{now.strftime('%Y%m%d%H%M%S')}",

@@ -23,6 +23,13 @@ class ScrapydService:
     @classmethod
     def init(cls):
         cls.connect_nodes()
+        scheduler.add_job(
+            id='auto_connect_nodes',
+            func=ScrapydService.connect_nodes,
+            trigger='cron',
+            second=30,
+            replace_existing=True,
+        )
 
     @classmethod
     def connect_nodes(cls):
@@ -150,7 +157,7 @@ class ScrapydService:
             try:
                 node = cls.get_node_by_id(node_id)
                 if node is not None:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **params.get('args'))
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
@@ -162,7 +169,7 @@ class ScrapydService:
             try:
                 node = cls.get_least_busy_node()
                 if node is not None:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params)
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **params.get('args'))
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
@@ -202,12 +209,3 @@ class ScrapydService:
                 logger.error(f"Failed to update egg on node {node_id}: {e}")
                 raise e
         return
-
-
-scheduler.add_job(
-    id='auto_connect_nodes',
-    func=ScrapydService.connect_nodes,
-    trigger='cron',
-    second=30,
-    replace_existing=True,
-)
