@@ -79,11 +79,13 @@ class ScrapydService:
                 if c.instance is not None:
                     try:
                         data = c.instance.daemon_status()
+                        jobs = c.instance.list_jobs_merge(SCRAPY_PROJECT['NAME'])
                         data.update({
                             'id': c.id,
                             'name': c.name,
                             'address': c.address,
                             'status': 1,
+                            'jobs': jobs,
                         })
                         return data
                     except Exception as e:
