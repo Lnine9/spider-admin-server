@@ -6,7 +6,7 @@ from model.schedule import Schedule
 from utils.id import generate_uuid
 import datetime
 from utils.time_util import format_datetime
-from constants.index import ProjectStatus, TaskStatus
+from constants.index import ProjectStatus, TaskStatus, TaskMode
 from service.task_service import TaskService
 from service.scrapyd_service import ScrapydService
 
@@ -15,7 +15,7 @@ from service.scrapyd_service import ScrapydService
 # MIN_SLICE_DATETIME = datetime.timedelta(minutes=MIN_SLICE)
 
 
-def generate_task(project, range_start_time, range_end_time):
+def generate_task(project, range_start_time, range_end_time, mode):
     task = {
         'id': generate_uuid(),
         'name': f"{project.get('name')}:{format_datetime(range_start_time)}-{format_datetime(range_end_time)}",
@@ -25,7 +25,7 @@ def generate_task(project, range_start_time, range_end_time):
         'range_start_time': range_start_time,
         'range_end_time': range_end_time,
         'status': TaskStatus.PENDING,
-        'mode': project.get('mode'),
+        'mode': mode,
         'args': project.get('args')
     }
     return task
@@ -112,7 +112,7 @@ class ProjectService:
 
         # 当时间间隔为0时，直接添加任务
         if delta.total_seconds() == 0:
-            task = generate_task(project, range_start_time, range_end_time)
+            task = generate_task(project, range_start_time, range_end_time, project.get('mode'))
             TaskService.add_task(task)
             result.append(task.get('id'))
             return result
@@ -121,7 +121,12 @@ class ProjectService:
             # if range_end_time - range_start_time < MIN_SLICE_DATETIME:
             #     break
             next_start_time = range_start_time + delta
-            task = generate_task(project, range_start_time, next_start_time)
+            # 最新的子任务为增量抓取
+            mode = TaskMode.RANGE
+            is_last = next_start_time >= range_end_time
+            if is_last and project.get('mode') == TaskMode.INCREMENT:
+                mode = TaskMode.INCREMENT
+            task = generate_task(project, range_start_time, next_start_time, mode)
             TaskService.add_task(task)
             result.append(task.get('id'))
             range_start_time = next_start_time

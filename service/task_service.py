@@ -80,10 +80,10 @@ class TaskService:
 
         if data.get('total_crawl') is not None:
             task.total_crawl = data.get('total_crawl')
-            project.total_crawl += data.get('total_crawl')
+            # project.total_crawl += data.get('total_crawl')
         if data.get('total_resolve') is not None:
             task.total_resolve = data.get('total_resolve')
-            project.total_resolve += data.get('total_resolve')
+            # project.total_resolve += data.get('total_resolve')
         if is_from_schedule:
             if data.get('last_crawl_time') is not None and data.get('last_crawl_time') is not None:
                 last_crawl_time = datetime.datetime.fromtimestamp(data.get('last_crawl_time'))
@@ -100,6 +100,8 @@ class TaskService:
 
         if all([t.status not in [TaskStatus.SCHEDULED, TaskStatus.PENDING, TaskStatus.RUNNING] for t in tasks]):
             project.end_time = datetime.datetime.now()
+            project.total_crawl = sum([t.total_crawl for t in tasks])
+            project.total_resolve = sum([t.total_resolve for t in tasks])
 
         if all([t.status == TaskStatus.COMPLETED for t in tasks]):
             project.status = ProjectStatus.COMPLETED

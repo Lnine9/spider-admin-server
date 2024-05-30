@@ -35,6 +35,10 @@ def add_schedule():
     }
     return ScheduleService.add_schedule(schedule)
 
+@schedule_api.post("/run")
+def run_schedule():
+    id = request.json.get('id')
+    return ScheduleService.run_schedule(id)
 
 @schedule_api.post("/update")
 def update_schedule():

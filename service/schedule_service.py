@@ -97,6 +97,10 @@ class ScheduleService:
         Schedule.create(**schedule)
 
     @classmethod
+    def run_schedule(cls, id):
+        job(id)
+
+    @classmethod
     def update_schedule(cls, id, new_schedule):
         local = Schedule.get(Schedule.id == id)
         local.name = new_schedule.get('name')

@@ -155,11 +155,15 @@ class ScrapydService:
 
         node = None
 
+        ext_args = {}
+        if params.get('args') is not None:
+            ext_args = params.get('args')
+
         if node_id is not None:
             try:
                 node = cls.get_node_by_id(node_id)
                 if node is not None:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **params.get('args'))
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **ext_args)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
@@ -171,7 +175,7 @@ class ScrapydService:
             try:
                 node = cls.get_least_busy_node()
                 if node is not None:
-                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **params.get('args'))
+                    node.instance.schedule(project=SCRAPY_PROJECT['NAME'], spider=spider.main_class, jobid=task_id, **params, **ext_args)
                     task.status = TaskStatus.SCHEDULED
                     task.job_id = task_id
                     task.node_address = node.address
