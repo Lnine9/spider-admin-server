@@ -3,9 +3,9 @@
 ## 启动命令
 ```shell
 #前台启动
-waitress-serve --host 127.0.0.1 --port 2024 app:app
+waitress-serve --host 0.0.0.0 --port 2024 app:app
 #后台启动
-nohup waitress-serve --host 127.0.0.1 --port 2024 app:app >log/output.log 2>&1 &
+nohup waitress-serve --host 0.0.0.0 --port 2024 app:app >log/output.log 2>&1 &
 
 ```
 ##停止命令

@@ -2,7 +2,6 @@ import json
 
 from model.reslover import Resolver
 from model.spider_info import SpiderInfo
-from model.spider_response import SpiderResponse
 from utils.id import generate_uuid
 
 
@@ -95,7 +94,6 @@ class SpiderService:
         spider_info = SpiderInfo().select().where(SpiderInfo.enable == 1).paginate(page_no, page_size)
         total = SpiderInfo.select().where(SpiderInfo.enable == 1).count()
         return {"spider_info": spider_info, "total": total}
-
 
     @classmethod
     def add_resolver(cls, form):
