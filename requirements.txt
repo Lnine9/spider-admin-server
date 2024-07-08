@@ -5,3 +5,6 @@ peewee==3.17.1
 PyJWT==2.8.0
 Werkzeug==3.0.3
 waitress==3.0.0
+scrapyd-api==0.0.1
+urllib3==1.24.3
+SQLAlchemy==1.4.13

@@ -1,10 +1,9 @@
-import logging
-import os
+
+
 
 from flask import request, make_response, Response
 from flask_cors import CORS
 from router import register_blueprint
-from setting import SECRET_KEY
 from utils.JWT_token import decode_jwt_token, generate_jwt_token
 from utils.flask_ext.flask_app import FlaskApp
 from service.scrapyd_service import ScrapydService
